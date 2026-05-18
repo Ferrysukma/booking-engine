@@ -8,5 +8,6 @@ export default withNuxt({
     "@typescript-eslint/no-unused-expressions": "off",
     "vue/attribute-hyphenation": "off",
     "vue/html-self-closing": "off",
+    "vue/first-attribute-linebreak": "off"
   }
 })

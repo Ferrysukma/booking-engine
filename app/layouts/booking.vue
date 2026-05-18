@@ -3,15 +3,11 @@
   import LanguageDropdown from '~/components/LanguageDropdown.vue';
 
   const bgColor = ref('#F2E4E4')
-  const navbarColor = ref('#804D3C')
-  // const colorTheme: any = useCookie('color-theme', {
-  //   maxAge: 60 * 60 * 24 * 1, // 1 Day
-  //   refresh: true
-  // })
-  // colorTheme.value = {
-  //   theme: navbarColor,
-  //   secondaryTheme: bgColor,
-  // };
+const navbarColor = ref('#804D3C')
+
+defineProps<{
+  fixedFooter?: boolean
+}>()
 </script>
 
 <template>
@@ -20,7 +16,8 @@
     <nav class="bg-transparent fixed w-full z-100 top-0 inset-s-0">
       <div class="container flex flex-wrap items-center justify-between mx-auto px-4 md:px-8 py-2.5 md:py-5 border-b border-default">
         <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <NuxtImg src="https://flowbite.com/docs/images/logo.svg" class="h-7" alt="Flowbite Logo" />
+         <UIcon name="material-symbols:garage-home-outline" class="h-7 size-8 text-white" />
+          <!-- <NuxtImg src="https://flowbite.com/docs/images/logo.svg" class="h-7" alt="Flowbite Logo" /> -->
             <span class="self-center text-base font-semibold whitespace-nowrap text-white">Eaze Villa Uluwatu - Bali</span>
         </a>
         <button data-collapse-toggle="navbar-multi-level-dropdown" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-base md:hidden hover:bg-neutral-secondary-soft hover:text-heading focus:outline-none focus:ring-2 focus:ring-neutral-tertiary" aria-controls="navbar-multi-level-dropdown" aria-expanded="false">
@@ -44,11 +41,11 @@
       <slot/>
     </div>
     <!-- Footer -->
-    <footer class="border-t border-default mt-8 container mx-auto">
+   <footer
+      :class="['border-t border-default mt-8 container mx-auto', (fixedFooter && 'fixed bottom-0 left-0 right-0')]">
       <div class="w-full mx-auto p-4 md:py-5">
         <span class="block text-2xs md:text-xs text-white text-center">Eaze Villas Uluwatu - Bali, Jl. Goa Lempeh No.30, Pecatu, Kec. Kuta Sel., Kabupaten Badung, Bali 80361, Badung, Bali, Indonesia 80361</span>
-      </div>
-      <!-- <button class="bg_theme px-4 py-2 rounded border border-slate-500">Tes Button</button> -->
+     </div>
     </footer>
   </div>
 </template>

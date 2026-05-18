@@ -1,5 +1,10 @@
 export const useCart = () => {
-  const items = useState<any[]>('cart', () => [])
+  const items = useCookie<any[]>('cart', {
+    default: () => [],
+    maxAge: 60 * 60 * 24 * 7, // 1 week
+  })
+
+  // const items = useState<any[]>('cart', () => [])
 
   const addToCart = (roomId: number, packageId: number, quantity: number) => {
     // Check if item already exists to increment quantity (optional)
@@ -15,8 +20,6 @@ export const useCart = () => {
   const removeFromCart = (id: string) => {
     const newItem = items.value.filter((item: any) => item.id !== id)
     items.value = newItem
-    console.log('newItem', newItem)
-    console.log('id', id)
   }
 
   const totalItems = computed(() => {
