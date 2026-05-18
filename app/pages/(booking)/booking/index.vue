@@ -10,7 +10,6 @@ useSeoMeta({
 })
 
 const route = useRoute();
-const router = useRouter()
 const hotel = ref(route.query.data);
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -18,10 +17,6 @@ const isDesktop = breakpoints.greaterOrEqual('sm')
 
 const startDate = new Date();
 const endDate = new Date();
-const modelDate = shallowRef({
-  start: (startDate),
-  end: (new Date(endDate.setDate(endDate.getDate() + 7))),
-})
 
 const morePackage = ref(false);
 
@@ -251,7 +246,7 @@ const dataPackages = [
   },
 ];
 
-const { items, addToCart, totalItems, removeFromCart } = useCart()
+const { items, addToCart } = useCart()
 
 const roomData = computed(() => {
   rooms.map((room: any) => {
@@ -294,10 +289,6 @@ const carts = computed(() => {
   return data
 })
 
-const handleCheckout = () => {
-  items.value.length > 0 && router.push('/booking/checkout')
-}
-
 </script>
 
 <template>
@@ -313,7 +304,7 @@ const handleCheckout = () => {
               <UiDatepickerRange labelStart="CHECK-IN" labelEnd="CHECK-OUT" :startDate="startDate" :endDate="endDate" />
             </div>
             <div class="mt-4 md:mt-0 w-full md:w-auto">
-              <ModuleDropdown label="ROOMS"
+             <FragmentDropdown label="ROOMS"
                 :buttonLabel="formFilter.rooms + ' Rooms, ' + formFilter.adults + ' Adult, ' + formFilter.children + ' Child'"
                 color="theme_outline">
                 <UiInputNumber id="rooms-quantity-input" v-model="formFilter.rooms" label="Rooms" name="rooms"
@@ -322,7 +313,7 @@ const handleCheckout = () => {
                   :min="1" />
                 <UiInputNumber id="children-quantity-input" v-model="formFilter.children" label="Child" name="children"
                   :min="0" />
-              </ModuleDropdown>
+             </FragmentDropdown>
             </div>
           </div>
           <div class="w-full md:w-auto mt-4 md:mt-0">
@@ -352,9 +343,9 @@ const handleCheckout = () => {
     </section>
 
     <section id="room-section" class="space-y-3">
-      <div class="flex flex-row space-x-2.5">
-        <div :class="'flex flex-col space-y-3 ' + ((carts.length > 0) ? 'md:w-2/3' : 'w-full')">
-          <ModuleCard v-for="room in roomData" :key="room.id">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div :class="'flex flex-col space-y-3 ' + ((carts.length > 0) ? 'md:col-span-2' : 'md:col-span-3')">
+          <FragmentCard v-for="room in roomData" :key="room.id">
             <!-- Room Name -->
             <h3 :class="['flex md:hidden font-bold text-left text-lg text_theme']">{{ room.name }}</h3>
             <p :class="'text-xs flex md:hidden items-end font-light text-slate-400 text_theme'">
@@ -363,7 +354,7 @@ const handleCheckout = () => {
                 room.bed }}
             </p>
             <!-- Carousel Image -->
-            <ModuleCarousel id="rooms-carousel" :images="room.images" indicators />
+           <FragmentCarousel id="rooms-carousel" :images="room.images" indicators />
             <!-- Information -->
             <div class="md:w-2/3 md:grid md:grid-cols-3 md:gap-2 md:ml-6">
               <!-- Title -->
@@ -447,144 +438,23 @@ const handleCheckout = () => {
                 </div>
               </div>
             </div>
-          </ModuleCard>
+         </FragmentCard>
         </div>
+
         <!-- Cart -->
-        <div v-if="carts.length > 0 && isDesktop" class="md:w-1/3">
-          <ModuleCard>
-            <div class="flex flex-col space-x-2 mb-8 w-full">
-              <h4 :class="['text_theme font-bold text-lg mb-4']">Booking Details</h4>
-              <div class="flex flex-row space-x-6 border-b border-default mb-2 pb-3">
-                <div class="">
-                  <p class="text-[12px] font-semibold">Check In</p>
-                  <p class="text-[12px] font-semibold">{{ dateFormatter(modelDate.start) }} </p>
-                </div>
-                <div class="">
-                  <p class="text-[12px] font-semibold">Check Out</p>
-                  <p class="text-[12px] font-semibold">{{ dateFormatter(modelDate.end) }} </p>
-                </div>
-              </div>
-              <div v-for="cart in carts" :key="cart.id"
-                class="flex flex-col space-y-2 border-b border-default mb-2 pb-3">
-                <h4 class="font-semibold text-[16px] mb-2">{{ cart.name }}</h4>
-                <table class="w-full">
-                  <tbody>
-                    <tr v-for="detail in cart.details" :key="detail.id">
-                      <th class="py-1 w-[50%] text-green-500 font-medium text-[13px] text-start">{{ detail.name }}</th>
-                      <th class="py-1 w-[35%] text-amber-950 font-semibold text-[13px] text-end">IDR {{
-                        formatPrice(detail.price) }}</th>
-                      <th class="py-1 w-[15%] text-end">
-                        <a class="text-xs font-medium text-red-500 underline hover:no-underline cursor-pointer"
-                          @click="removeFromCart(detail.cartId)">
-                          <UIcon name="material-symbols:delete" class="size-5" />
-                        </a>
-                      </th>
-                    </tr>
-                    <tr>
-                      <th class="py-1 w-[50%] text-slate-800 font-bold text-[13px] text-start">Subtotal</th>
-                      <th class="py-1 w-[35%] text-slate-800 font-bold text-[13px] text-end">IDR {{
-                        formatPrice(cart.subtotal) }}</th>
-                      <th></th>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="flex flex-col space-y-2 border-b border-default mb-2 pb-3">
-                <table class="w-full">
-                  <tbody>
-                    <tr>
-                      <th class="py-1 w-[50%] text-slate-800 font-bold text-[13px] text-start">Total</th>
-                      <th class="py-1 w-[35%] text-slate-800 font-bold text-[13px] text-end">IDR {{
-                        formatPrice(carts.reduce((a: any, b: any) => a + b.subtotal, 0))}}</th>
-                      <th></th>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <UiButton class="ml-2 w-full mt-4" variant="theme" @clicked="handleCheckout">
-                {{ carts.length > 0 ? 'Complete Booking' : 'Close' }}
-              </UiButton>
-            </div>
-          </ModuleCard>
+       <div v-if="carts.length > 0">
+          <ModuleCart :carts="carts" :isDesktop="isDesktop" />
         </div>
       </div>
     </section>
 
     <!-- Drawer Room Details -->
-    <ModuleDrawer id="drawer-description" position="right" :title="moreFacilities?.name" className="text_theme">
+   <FragmentDrawer id="drawer-description" position="right" :title="moreFacilities?.name" className="text_theme">
       <p class="mb-3 text-sm text-body">Upgrade your Figma toolkit with a design system built on top <a href="#"
           class="font-medium text-heading underline hover:no-underline">Flowbite CSS</a> featuring variants, style guide
         and auto layout.</p>
       <p class="mb-5 text-sm text-body">Recommended for professional developers and companies building enterprise-level.
       </p>
-    </ModuleDrawer>
-
-    <!-- Cart Mobile -->
-    <div v-if="!isDesktop">
-      <button
-        :class="'fixed bottom-6 right-6 h-12 w-12 flex justify-center items-center text-white p-4 rounded-full shadow-lg hover:opacity-90 focus:outline-none z-100 transition-all duration-300 bg_theme'"
-        type="button" data-drawer-target="drawer-cart" data-drawer-show="drawer-cart" data-drawer-placement="bottom"
-        aria-controls="drawer-cart" data-drawer-backdrop="false">
-        <UIcon name="material-symbols:shopping-cart-rounded" class="size-5" />
-        <span class="sr-only">Notifications</span>
-        <div
-          class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-danger border-2 border-buffer rounded-full -top-2 -inset-e-1">
-          {{ totalItems }}</div>
-      </button>
-    </div>
-
-    <!-- Drawer Cart -->
-    <ModuleDrawer v-if="!isDesktop" id="drawer-cart" position="bottom" title="Booking Details" className="text_theme">
-      <div class="flex flex-col space-x-2 mb-8">
-        <div class="flex flex-row space-x-6 border-b border-default mb-2 pb-3">
-          <div class="">
-            <p class="text-xs font-medium">Check In</p>
-            <p class="text-xs font-medium">{{ dateFormatter(modelDate.start) }} </p>
-          </div>
-          <div class="">
-            <p class="text-xs font-medium">Check Out</p>
-            <p class="text-xs font-medium">{{ dateFormatter(modelDate.end) }} </p>
-          </div>
-        </div>
-        <div v-for="cart in carts" :key="cart.id" class="flex flex-col space-y-2 border-b border-default mb-2 pb-3">
-          <h4 class="font-semibold text-[16px] mb-2">{{ cart.name }}</h4>
-          <table class="w-full">
-            <tbody>
-              <tr v-for="detail in cart.details" :key="detail.id">
-                <th class="py-1 w-[50%] text-green-500 font-medium text-[13px] text-start">{{ detail.name }}</th>
-                <th class="py-1 w-[35%] text-amber-950 font-semibold text-[13px] text-end">IDR {{
-                  formatPrice(detail.price) }}</th>
-                <th class="py-1 w-[15%] text-end"><a
-                    class="text-xs font-medium text-red-600 underline hover:no-underline cursor-pointer"
-                    @click="removeFromCart(detail.cartId)">
-                    <UIcon name="material-symbols:delete" class="size-5" />
-                  </a></th>
-              </tr>
-              <tr>
-                <th class="py-1 w-[50%] text-slate-800 font-bold text-[13px] text-start">Subtotal</th>
-                <th class="py-1 w-[35%] text-slate-800 font-bold text-[13px] text-end">IDR {{ formatPrice(cart.subtotal)
-                }}</th>
-                <th></th>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="flex flex-col space-y-2 border-b border-default mb-2 pb-3">
-          <table class="w-full">
-            <tbody>
-              <tr>
-                <th class="py-1 w-[50%] text-slate-800 font-bold text-[13px] text-start">Total</th>
-                <th class="py-1 w-[35%] text-slate-800 font-bold text-[13px] text-end">IDR {{
-                  formatPrice(carts.reduce((a: any, b: any) => a + b.subtotal, 0))}}</th>
-                <th></th>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <UiButton class="ml-2 w-full mt-4" variant="theme" @clicked="handleCheckout">
-          {{ carts.length > 0 ? 'Complete Booking' : 'Close' }}
-        </UiButton>
-      </div>
-    </ModuleDrawer>
+   </FragmentDrawer>
   </div>
 </template>

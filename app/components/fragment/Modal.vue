@@ -2,17 +2,28 @@
 const { isOpen, closeModal } = useModal()
 
 interface Props {
-  title?: string
+  title?: string,
+  size: 'sm' | 'md' | 'lg' | 'xl'
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const sizeStyle = computed(() => {
+  const style = {
+    sm: 'max-w-md',
+    md: 'max-w-xl',
+    lg: 'max-w-5xl',
+    xl: 'max-w-8xl',
+  }
+  return style[props.size]
+})
 </script>
 
 <template>
   <!-- Main modal -->
   <div v-if="isOpen" id="modal-fragment" tabindex="-1" aria-hidden="true"
-    class="overflow-y-auto overflow-x-hidden fixed flex top-0 right-0 left-0 z-100 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/50">
-    <div class="flex min-h-screen items-center justify-center p-4 w-full max-w-md max-h-full">
+   class="overflow-y-auto overflow-x-hidden fixed flex top-0 right-0 left-0 z-100 justify-center items-center w-full md:inset-0 h-full max-h-full bg-black/50">
+    <div :class="['relative flex min-h-screen items-center justify-center p-4 max-h-full', sizeStyle]">
       <!-- Modal content -->
       <div class="relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
         <!-- Modal header -->
